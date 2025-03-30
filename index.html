@@ -63,8 +63,11 @@
     const paddleWidth = 10, paddleHeight = 100;
     const ballRadius = 7;
     let upPressed = false, downPressed = false;
-    const hitSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-    const scoreSound = new Audio("https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg");
+
+    const wallSound = new Audio("https://cdn.pixabay.com/audio/2023/03/30/audio_74789a91e4.mp3");
+    const paddleSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_4268e52969.mp3");
+    const scoreSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_f4fa35bfb4.mp3");
+    [wallSound, paddleSound, scoreSound].forEach(s => s.volume = 0.2);
 
     const player = { x: 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
     const ai = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
@@ -129,13 +132,16 @@
       ball.x += ball.vx;
       ball.y += ball.vy;
 
-      if (ball.y <= 0 || ball.y >= canvas.height) ball.vy *= -1;
+      if (ball.y <= 0 || ball.y >= canvas.height) {
+        ball.vy *= -1;
+        wallSound.play();
+      }
 
       let hitPlayer = ball.x - ballRadius < player.x + paddleWidth && ball.y > player.y && ball.y < player.y + paddleHeight;
       let hitAI = ball.x + ballRadius > ai.x && ball.y > ai.y && ball.y < ai.y + paddleHeight;
 
       if (hitPlayer || hitAI) {
-        hitSound.play();
+        paddleSound.play();
         ball.vx *= -1;
         ball.speed += 0.3;
         ball.vx = (ball.vx < 0 ? -1 : 1) * ball.speed;
