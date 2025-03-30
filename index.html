@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Canodo - Coming Soon</title>
+  <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='90'>C</text></svg>"> 
   <style>
     body {
       background: #111;
@@ -57,6 +58,7 @@
     const ctx = canvas.getContext("2d");
     const scoreDisplay = document.getElementById("score");
     const resetBtn = document.getElementById("resetBtn");
+    const favicon = document.getElementById("favicon");
 
     const paddleWidth = 10, paddleHeight = 100;
     const ballRadius = 7;
@@ -163,6 +165,25 @@
 
     updateScore();
     gameLoop();
+
+    // Animate favicon every 10s for 1s by rotating
+    let rotate = 0;
+    function animateFavicon() {
+      const interval = setInterval(() => {
+        let frames = 0;
+        const rotateInterval = setInterval(() => {
+          rotate += 36;
+          const icon = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+            <g transform='rotate(${rotate} 50 50)'><text y='75' font-size='90'>C</text></g>
+          </svg>`;
+          favicon.href = 'data:image/svg+xml,' + encodeURIComponent(icon);
+          frames++;
+          if (frames >= 10) clearInterval(rotateInterval);
+        }, 100);
+      }, 10000);
+    }
+
+    animateFavicon();
   </script>
 </body>
 </html>
