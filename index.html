@@ -15,33 +15,28 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       text-align: center;
     }
-
     h1 {
       font-size: 2.5rem;
       margin-bottom: 1rem;
     }
-
     p.subtitle {
       font-size: 1.1rem;
       margin-bottom: 2rem;
       color: #bbb;
     }
-
     #pong-container {
       display: none;
       flex-direction: column;
       align-items: center;
     }
-
     canvas {
       background: #000;
       border-radius: 8px;
       margin: 1rem 0;
     }
-
     .controls button {
       margin: 0.5rem;
       padding: 0.6rem 1.2rem;
@@ -52,11 +47,9 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     .controls button:hover {
       background: #333;
     }
-
     #playBtn {
       padding: 0.8rem 1.6rem;
       font-size: 1.1rem;
@@ -66,9 +59,38 @@
       color: #fff;
       cursor: pointer;
     }
-
     #playBtn:hover {
       background: #005fcc;
+    }
+    #contact-container {
+      margin-top: 3rem;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    #contact-container textarea {
+      width: 100%;
+      padding: 0.8rem;
+      background: #1f1f1f;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 6px;
+      resize: vertical;
+      min-height: 100px;
+    }
+    #sendBtn {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #sendBtn:hover {
+      background: #218838;
     }
   </style>
 </head>
@@ -86,26 +108,39 @@
     </div>
   </div>
 
+  <div id="contact-container">
+    <p style="margin: 0 0 0.5rem; font-weight: bold;">Interested in this domain?</p>
+    <textarea id="message" placeholder="Send us a message..."></textarea>
+    <button id="sendBtn">Send Message</button>
+    <p style="font-size: 0.9rem; color: #aaa;">(Note: This will attempt to send via your default email client.)</p>
+  </div>
+
   <script>
     const canvas = document.getElementById("pong");
     const ctx = canvas.getContext("2d");
     const scoreDisplay = document.getElementById("score");
     const resetBtn = document.getElementById("resetBtn");
     const muteBtn = document.getElementById("muteBtn");
-    const favicon = document.getElementById("favicon");
     const playBtn = document.getElementById("playBtn");
     const pongContainer = document.getElementById("pong-container");
 
     playBtn.addEventListener("click", () => {
       playBtn.style.display = "none";
       pongContainer.style.display = "flex";
+      updateScore();
+      gameLoop();
+    });
+
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const message = document.getElementById("message").value;
+      const mailto = `mailto:your@email.com?subject=Canodo%20Domain%20Inquiry&body=${encodeURIComponent(message)}`;
+      window.location.href = mailto;
     });
 
     const paddleWidth = 10, paddleHeight = 100;
     const ballRadius = 7;
     let upPressed = false, downPressed = false;
     let isMuted = true;
-
     const wallSound = new Audio("https://cdn.pixabay.com/audio/2023/03/30/audio_74789a91e4.mp3");
     const paddleSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_4268e52969.mp3");
     const scoreSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_f4fa35bfb4.mp3");
@@ -223,27 +258,6 @@
       draw();
       requestAnimationFrame(gameLoop);
     }
-
-    updateScore();
-    gameLoop();
-
-    let rotate = 0;
-    function animateFavicon() {
-      setInterval(() => {
-        let frames = 0;
-        const rotateInterval = setInterval(() => {
-          rotate += 36;
-          const icon = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
-            <g transform='rotate(${rotate} 50 50)'><text y='75' font-size='90'>C</text></g>
-          </svg>`;
-          favicon.href = 'data:image/svg+xml,' + encodeURIComponent(icon);
-          frames++;
-          if (frames >= 10) clearInterval(rotateInterval);
-        }, 100);
-      }, 10000);
-    }
-
-    animateFavicon();
   </script>
 </body>
 </html>
