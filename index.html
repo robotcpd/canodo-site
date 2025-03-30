@@ -26,8 +26,8 @@
       margin: 20px auto;
       border: 2px solid white;
     }
-    #resetBtn {
-      margin: 20px auto;
+    #resetBtn, #muteBtn {
+      margin: 10px 10px;
       padding: 10px 20px;
       font-size: 1em;
       background-color: #444;
@@ -36,7 +36,7 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    #resetBtn:hover {
+    #resetBtn:hover, #muteBtn:hover {
       background-color: #666;
     }
     @media (max-width: 700px) {
@@ -51,23 +51,40 @@
   <h1>🚧 Canodo is Coming Soon 🚧</h1>
   <div id="score">Player: 0 | AI: 0</div>
   <canvas id="pong" width="600" height="400"></canvas>
-  <button id="resetBtn">Reset Game</button>
+  <div>
+    <button id="resetBtn">Reset Game</button>
+    <button id="muteBtn">Unmute</button>
+  </div>
 
   <script>
     const canvas = document.getElementById("pong");
     const ctx = canvas.getContext("2d");
     const scoreDisplay = document.getElementById("score");
     const resetBtn = document.getElementById("resetBtn");
+    const muteBtn = document.getElementById("muteBtn");
     const favicon = document.getElementById("favicon");
 
     const paddleWidth = 10, paddleHeight = 100;
     const ballRadius = 7;
     let upPressed = false, downPressed = false;
+    let isMuted = true;
 
     const wallSound = new Audio("https://cdn.pixabay.com/audio/2023/03/30/audio_74789a91e4.mp3");
     const paddleSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_4268e52969.mp3");
     const scoreSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_f4fa35bfb4.mp3");
     [wallSound, paddleSound, scoreSound].forEach(s => s.volume = 0.2);
+
+    function playSound(sound) {
+      if (!isMuted) {
+        sound.currentTime = 0;
+        sound.play();
+      }
+    }
+
+    muteBtn.addEventListener("click", () => {
+      isMuted = !isMuted;
+      muteBtn.textContent = isMuted ? "Unmute" : "Mute";
+    });
 
     const player = { x: 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
     const ai = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
@@ -134,14 +151,14 @@
 
       if (ball.y <= 0 || ball.y >= canvas.height) {
         ball.vy *= -1;
-        wallSound.play();
+        playSound(wallSound);
       }
 
       let hitPlayer = ball.x - ballRadius < player.x + paddleWidth && ball.y > player.y && ball.y < player.y + paddleHeight;
       let hitAI = ball.x + ballRadius > ai.x && ball.y > ai.y && ball.y < ai.y + paddleHeight;
 
       if (hitPlayer || hitAI) {
-        paddleSound.play();
+        playSound(paddleSound);
         ball.vx *= -1;
         ball.speed += 0.3;
         ball.vx = (ball.vx < 0 ? -1 : 1) * ball.speed;
@@ -149,14 +166,14 @@
       }
 
       if (ball.x < 0) {
-        scoreSound.play();
+        playSound(scoreSound);
         ai.score++;
         updateScore();
         resetBall('ai');
       }
 
       if (ball.x > canvas.width) {
-        scoreSound.play();
+        playSound(scoreSound);
         player.score++;
         updateScore();
         resetBall('player');
