@@ -62,6 +62,10 @@
     #playBtn:hover {
       background: #005fcc;
     }
+    #scoreDisplay {
+      font-size: 1rem;
+      color: #ccc;
+    }
     #contact-container {
       margin-top: 3rem;
       width: 100%;
@@ -96,168 +100,157 @@
 </head>
 <body>
   <h1>Canodo</h1>
-  <p class="subtitle">Something should probably go here, I'll work on that..."</p>
+  <p class="subtitle">We're working on something awesome. Stay tuned.</p>
   <button id="playBtn">Play Pong</button>
 
   <div id="pong-container">
-    <div id="score">Player: 0 | AI: 0</div>
-    <canvas id="pong" width="600" height="400"></canvas>
+    <div id="scoreDisplay">Player: 0 | AI: 0</div>
+    <canvas id="pong" width="480" height="320"></canvas>
     <div class="controls">
-      <button id="resetBtn">Reset Game</button>
+      <button id="resetBtn">Reset</button>
       <button id="muteBtn">Unmute</button>
     </div>
   </div>
 
   <div id="contact-container">
-    <p style="margin: 0 0 0.5rem; font-weight: bold;">Have a question?</p>
+    <p style="margin: 0 0 0.5rem; font-weight: bold;">Interested in this domain?</p>
     <textarea id="message" placeholder="Send us a message..."></textarea>
     <button id="sendBtn">Send Message</button>
     <p style="font-size: 0.9rem; color: #aaa;">(Note: This will attempt to send via your default email client.)</p>
   </div>
-<script>
-  const canvas = document.getElementById("pong");
-  const ctx = canvas.getContext("2d");
-  const scoreDisplay = document.getElementById("score");
-  const resetBtn = document.getElementById("resetBtn");
-  const muteBtn = document.getElementById("muteBtn");
-  const playBtn = document.getElementById("playBtn");
-  const pongContainer = document.getElementById("pong-container");
 
-  playBtn.addEventListener("click", () => {
-    playBtn.style.display = "none";
-    pongContainer.style.display = "flex";
-    updateScore();
-    gameLoop();
-  });
+  <script>
+    const canvas = document.getElementById("pong");
+    const ctx = canvas.getContext("2d");
+    const resetBtn = document.getElementById("resetBtn");
+    const muteBtn = document.getElementById("muteBtn");
+    const playBtn = document.getElementById("playBtn");
+    const pongContainer = document.getElementById("pong-container");
+    const scoreDisplay = document.getElementById("scoreDisplay");
 
-  document.getElementById("sendBtn")?.addEventListener("click", () => {
-    const message = document.getElementById("message").value;
-    const mailto = `mailto:your@email.com?subject=Canodo%20Domain%20Inquiry&body=${encodeURIComponent(message)}`;
-    window.location.href = mailto;
-  });
+    let isMuted = true;
+    muteBtn.textContent = "Unmute";
 
-  const paddleWidth = 10, paddleHeight = 100;
-  const ballRadius = 7;
-  let upPressed = false, downPressed = false;
-  let isMuted = true;
+    const player = { x: 10, y: 120, width: 10, height: 60, score: 0 };
+    const ai = { x: canvas.width - 20, y: 120, width: 10, height: 60, score: 0 };
+    const ball = { x: canvas.width / 2, y: canvas.height / 2, vx: 3, vy: 2, radius: 6, speed: 3 };
 
-  const wallSound = new Audio("https://cdn.pixabay.com/audio/2023/03/30/audio_74789a91e4.mp3");
-  const paddleSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_4268e52969.mp3");
-  const scoreSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_f4fa35bfb4.mp3");
-  [wallSound, paddleSound, scoreSound].forEach(s => s.volume = 0.2);
+    const wallSound = new Audio("https://cdn.pixabay.com/audio/2023/03/30/audio_74789a91e4.mp3");
+    const paddleSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_4268e52969.mp3");
+    const scoreSound = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_f4fa35bfb4.mp3");
+    [wallSound, paddleSound, scoreSound].forEach(s => s.volume = 0.15);
 
-  function playSound(sound) {
-    if (!isMuted) {
-      sound.currentTime = 0;
-      sound.play();
-    }
-  }
-
-  muteBtn.addEventListener("click", () => {
-    isMuted = !isMuted;
-    muteBtn.textContent = isMuted ? "Unmute" : "Mute";
-  });
-
-  const player = { x: 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
-  const ai = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
-  const ball = { x: canvas.width / 2, y: canvas.height / 2, vx: 3, vy: 3, speed: 3 };
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp") upPressed = true;
-    if (e.key === "ArrowDown") downPressed = true;
-  });
-
-  document.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowUp") upPressed = false;
-    if (e.key === "ArrowDown") downPressed = false;
-  });
-
-  resetBtn.addEventListener("click", () => {
-    player.score = 0;
-    ai.score = 0;
-    updateScore();
-    resetBall("player");
-  });
-
-  function resetBall(scoringPlayer) {
-    ball.x = canvas.width / 2;
-    ball.y = canvas.height / 2;
-    ball.speed = 3;
-    const direction = scoringPlayer === 'player' ? -1 : 1;
-    ball.vx = direction * 3;
-    ball.vy = (Math.random() * 2 - 1) * ball.speed;
-  }
-
-  function updateScore() {
-    scoreDisplay.textContent = `Player: ${player.score} | AI: ${ai.score}`;
-  }
-
-  function drawRect(x, y, w, h, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, h);
-  }
-
-  function drawCircle(x, y, r, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawRect(player.x, player.y, paddleWidth, paddleHeight, "white");
-    drawRect(ai.x, ai.y, paddleWidth, paddleHeight, "white");
-    drawCircle(ball.x, ball.y, ballRadius, "white");
-  }
-
-  function update() {
-    if (upPressed && player.y > 0) player.y -= 5;
-    if (downPressed && player.y < canvas.height - paddleHeight) player.y += 5;
-
-    if (ball.y < ai.y + paddleHeight / 2) ai.y -= 3;
-    else if (ball.y > ai.y + paddleHeight / 2) ai.y += 3;
-
-    ball.x += ball.vx;
-    ball.y += ball.vy;
-
-    if (ball.y <= 0 || ball.y >= canvas.height) {
-      ball.vy *= -1;
-      playSound(wallSound);
+    function playSound(sound) {
+      if (!isMuted) {
+        sound.currentTime = 0;
+        sound.play();
+      }
     }
 
-    const hitPlayer = ball.vx < 0 && ball.x - ballRadius <= player.x + paddleWidth && ball.x > player.x && ball.y >= player.y && ball.y <= player.y + paddleHeight;
-    const hitAI = ball.vx > 0 && ball.x + ballRadius >= ai.x && ball.x < ai.x + paddleWidth && ball.y >= ai.y && ball.y <= ai.y + paddleHeight;
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowUp") player.y -= 10;
+      if (e.key === "ArrowDown") player.y += 10;
+    });
 
-    if (hitPlayer || hitAI) {
-      playSound(paddleSound);
-      ball.vx *= -1;
-      ball.speed += 0.3;
-      ball.vx = (ball.vx < 0 ? -1 : 1) * ball.speed;
-      ball.vy = (ball.vy < 0 ? -1 : 1) * ball.speed;
-    }
+    muteBtn.addEventListener("click", () => {
+      isMuted = !isMuted;
+      muteBtn.textContent = isMuted ? "Unmute" : "Mute";
+    });
 
-    if (ball.x + ballRadius < 0) {
-      playSound(scoreSound);
-      ai.score++;
+    resetBtn.addEventListener("click", () => {
+      player.score = 0;
+      ai.score = 0;
       updateScore();
-      resetBall('ai');
+      resetBall();
+    });
+
+    function resetBall() {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.speed = 3;
+      ball.vx = Math.random() > 0.5 ? ball.speed : -ball.speed;
+      ball.vy = (Math.random() * 2 - 1) * ball.speed;
     }
 
-    if (ball.x - ballRadius > canvas.width) {
-      playSound(scoreSound);
-      player.score++;
+    function updateScore() {
+      scoreDisplay.textContent = `Player: ${player.score} | AI: ${ai.score}`;
+    }
+
+    function drawRect(obj) {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+    }
+
+    function drawBall() {
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawRect(player);
+      drawRect(ai);
+      drawBall();
+    }
+
+    function update() {
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+
+      if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+        ball.vy *= -1;
+        playSound(wallSound);
+      }
+
+      if (ball.x - ball.radius < player.x + player.width && ball.x > player.x && ball.y > player.y && ball.y < player.y + player.height) {
+        ball.vx *= -1;
+        ball.speed += 0.3;
+        ball.vx = (ball.vx < 0 ? -1 : 1) * ball.speed;
+        ball.vy = (ball.vy < 0 ? -1 : 1) * ball.speed;
+        playSound(paddleSound);
+      }
+
+      if (ball.x + ball.radius > ai.x && ball.x < ai.x + ai.width && ball.y > ai.y && ball.y < ai.y + ai.height) {
+        ball.vx *= -1;
+        ball.speed += 0.3;
+        ball.vx = (ball.vx < 0 ? -1 : 1) * ball.speed;
+        ball.vy = (ball.vy < 0 ? -1 : 1) * ball.speed;
+        playSound(paddleSound);
+      }
+
+      if (ball.x + ball.radius < 0) {
+        ai.score++;
+        updateScore();
+        playSound(scoreSound);
+        resetBall();
+      }
+
+      if (ball.x - ball.radius > canvas.width) {
+        player.score++;
+        updateScore();
+        playSound(scoreSound);
+        resetBall();
+      }
+
+      const target = ball.y - ai.height / 2;
+      ai.y += (target - ai.y) * 0.07;
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    playBtn.addEventListener("click", () => {
+      playBtn.style.display = "none";
+      pongContainer.style.display = "flex";
       updateScore();
-      resetBall('player');
-    }
-  }
-
-  function gameLoop() {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-  }
-</script>
+      resetBall();
+      loop();
+    });
+  </script>
 </body>
 </html>
