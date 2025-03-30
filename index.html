@@ -100,7 +100,7 @@
 </head>
 <body>
   <h1>Canodo</h1>
-  <p class="subtitle">Something should probably go here, I'll work on that...</p>
+  <p class="subtitle">Something should probably go here. I'll work on that....</p>
   <button id="playBtn">Play Pong</button>
 
   <div id="pong-container">
@@ -147,9 +147,12 @@
       }
     }
 
+    let keys = {};
     document.addEventListener("keydown", e => {
-      if (e.key === "ArrowUp") player.y -= 10;
-      if (e.key === "ArrowDown") player.y += 10;
+      keys[e.key] = true;
+    });
+    document.addEventListener("keyup", e => {
+      keys[e.key] = false;
     });
 
     muteBtn.addEventListener("click", () => {
@@ -196,6 +199,9 @@
     }
 
     function update() {
+      if (keys["ArrowUp"] && player.y > 0) player.y -= 5;
+      if (keys["ArrowDown"] && player.y < canvas.height - player.height) player.y += 5;
+
       ball.x += ball.vx;
       ball.y += ball.vy;
 
