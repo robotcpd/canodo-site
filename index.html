@@ -3,76 +3,87 @@
 <head>
   <title>Canodo - Coming Soon</title>
   <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='90'>C</text></svg>"> 
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(145deg, #0f2027, #203a43, #2c5364);
-      background-size: 400% 400%;
-      animation: gradientBG 15s ease infinite;
+      font-family: 'Inter', sans-serif;
+      background: #121212;
       color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       text-align: center;
     }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
     h1 {
-      padding: 40px 0 10px;
-      font-size: 2.5em;
-      text-shadow: 0 0 10px rgba(0,0,0,0.3);
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
     }
 
-    #score {
-      font-size: 1.2em;
-      margin-top: 10px;
+    p.subtitle {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: #bbb;
+    }
+
+    #pong-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
     }
 
     canvas {
       background: #000;
-      display: block;
-      margin: 20px auto;
-      border: 2px solid white;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255,255,255,0.2);
-    }
-
-    #resetBtn, #muteBtn {
-      margin: 10px 10px;
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: rgba(255,255,255,0.1);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.2);
       border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .controls button {
+      margin: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background: #1f1f1f;
+      color: #fff;
+      border: 1px solid #333;
+      border-radius: 6px;
       cursor: pointer;
-      backdrop-filter: blur(6px);
     }
 
-    #resetBtn:hover, #muteBtn:hover {
-      background-color: rgba(255,255,255,0.2);
+    .controls button:hover {
+      background: #333;
     }
 
-    @media (max-width: 700px) {
-      canvas {
-        width: 100%;
-        height: auto;
-      }
+    #playBtn {
+      padding: 0.8rem 1.6rem;
+      font-size: 1.1rem;
+      background: #007bff;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #playBtn:hover {
+      background: #005fcc;
     }
   </style>
 </head>
 <body>
-  <h1>🚧 Canodo is Coming Soon 🚧</h1>
-  <div id="score">Player: 0 | AI: 0</div>
-  <canvas id="pong" width="600" height="400"></canvas>
-  <div>
-    <button id="resetBtn">Reset Game</button>
-    <button id="muteBtn">Unmute</button>
+  <h1>Canodo</h1>
+  <p class="subtitle">We're working on something awesome. Stay tuned.</p>
+  <button id="playBtn">Play Pong</button>
+
+  <div id="pong-container">
+    <div id="score">Player: 0 | AI: 0</div>
+    <canvas id="pong" width="600" height="400"></canvas>
+    <div class="controls">
+      <button id="resetBtn">Reset Game</button>
+      <button id="muteBtn">Unmute</button>
+    </div>
   </div>
 
   <script>
@@ -82,6 +93,13 @@
     const resetBtn = document.getElementById("resetBtn");
     const muteBtn = document.getElementById("muteBtn");
     const favicon = document.getElementById("favicon");
+    const playBtn = document.getElementById("playBtn");
+    const pongContainer = document.getElementById("pong-container");
+
+    playBtn.addEventListener("click", () => {
+      playBtn.style.display = "none";
+      pongContainer.style.display = "flex";
+    });
 
     const paddleWidth = 10, paddleHeight = 100;
     const ballRadius = 7;
