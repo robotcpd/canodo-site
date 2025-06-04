@@ -4,104 +4,22 @@
   <title>Canodo - Coming Soon</title>
   <link id="favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='90'>C</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-      background: #121212;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-    }
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-    }
-    p.subtitle {
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-      color: #bbb;
-    }
-    #pong-container {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-    canvas {
-      background: #000;
-      border-radius: 8px;
-      margin: 1rem 0;
-    }
-    .controls button {
-      margin: 0.5rem;
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      background: #1f1f1f;
-      color: #fff;
-      border: 1px solid #333;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .controls button:hover {
-      background: #333;
-    }
-    #playBtn {
-      padding: 0.8rem 1.6rem;
-      font-size: 1.1rem;
-      background: #007bff;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      cursor: pointer;
-    }
-    #playBtn:hover {
-      background: #005fcc;
-    }
-    #scoreDisplay {
-      font-size: 1rem;
-      color: #ccc;
-    }
-    #contact-container {
-      margin-top: 3rem;
-      width: 100%;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    #contact-container textarea {
-      width: 100%;
-      padding: 0.8rem;
-      background: #1f1f1f;
-      color: #fff;
-      border: 1px solid #333;
-      border-radius: 6px;
-      resize: vertical;
-      min-height: 100px;
-    }
-    #sendBtn {
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #sendBtn:hover {
-      background: #218838;
-    }
-  </style>
+  
+  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="Canodo is a forthcoming collection of simple web experiments and tools.">
+  <meta property="og:title" content="Canodo">
+  <meta property="og:description" content="Canodo is a forthcoming collection of simple web experiments and tools.">
+  <meta property="og:url" content="https://canodo.xyz">
+  <meta property="og:type" content="website">
+
 </head>
 <body>
+<header id="hero">
   <h1>Canodo</h1>
-  <p class="subtitle">Something should probably go here. I'll work on that....</p>
+  <p class="subtitle">Canodo is a forthcoming collection of simple web experiments and tools.</p>
   <button id="playBtn">Play Pong</button>
+</header>
+<main>
 
   <div id="pong-container">
     <div id="scoreDisplay">Player: 0 | AI: 0</div>
@@ -118,6 +36,7 @@
     <button id="sendBtn">Send Message</button>
     <p style="font-size: 0.9rem; color: #aaa;">(Note: This will attempt to send via your default email client.)</p>
   </div>
+</main>
 
   <script>
     const canvas = document.getElementById("pong");
